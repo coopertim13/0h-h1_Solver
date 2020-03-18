@@ -3,11 +3,10 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 class Grid implements Iterable<Cell> {
-    static int cellAmount = 6;
+    static int cellAmount = 12;
     static int cellSize = 45;
     static int gridPadding = 10;
     static Cell[][] cells = new Cell[cellAmount][cellAmount];
-    static int countComplete = 0;
 
     // constructor
     public Grid(){
@@ -38,14 +37,12 @@ class Grid implements Iterable<Cell> {
                 if (cells[i][j].contains(x, y)) {
                     if(cells[i][j].color == Color.WHITE) {
                         cells[i][j].color = Color.RED;
-                        countComplete++;
                     }
                     else if(cells[i][j].color == Color.RED) {
                         cells[i][j].color = Color.BLUE;
                     }
                     else {
                         cells[i][j].color = Color.WHITE;
-                        countComplete--;
                     }
                 }
             }
@@ -56,34 +53,42 @@ class Grid implements Iterable<Cell> {
     }
 
     public static void solve() {
-        while(countComplete < cellAmount * cellAmount) {
+        for(int j = 0; j < 100 && stillWhite(); j++) {
             int i = 0;
             while(i < 3) {
-                countComplete += threes();
+                threes();
                 i++;
             }
             while(i < 7) {
-                countComplete += countHalfCellRowColumn();
+                countHalfCellRowColumn();
                 i++;
             }
             while(i < 11) {
-                countComplete += compareRowColumn();
+                compareRowColumn();
                 i++;
             }
         }
     }
 
-    public static int compareRowColumn() {
-        int totalCount = 0;
-        totalCount += compareRow();
-        totalCount += compareColumn();
-        return totalCount;
+    public static boolean stillWhite() {
+        for(int i = 0; i < cells.length; i++) {
+            for(int j = 0; j < cells[i].length; j++) {
+                if(cells[i][j].color.equals(Color.WHITE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public static int compareRow() {
+    public static void compareRowColumn() {
+        compareRow();
+        compareColumn();
+    }
+
+    public static void compareRow() {
         int sumRed;
         int sumBlue;
-        int changes = 0;
         ArrayList<Integer> fullRowIndexes = getFullRows();
         for(int i = 0; i < cells.length; i++) {
             sumRed = 0;
@@ -116,20 +121,17 @@ class Grid implements Iterable<Cell> {
                                 }
                             }
                         }
-                        changes+=2;
                     }
                     count++;
                 }
             }
         }
-        return changes;
     }
 
-    public static int compareColumn() {
+    public static void compareColumn() {
         int sumRed;
         int sumBlue;
-        int changes = 0;
-        ArrayList<Integer> fullColumnIndexes = getFullColumns();
+        ArrayList<Integer> fullRowIndexes = getFullRows();
         for(int i = 0; i < cells.length; i++) {
             sumRed = 0;
             sumBlue = 0;
@@ -141,33 +143,31 @@ class Grid implements Iterable<Cell> {
                     sumBlue++;
                 }
             }
-            if(sumRed == sumBlue && sumRed == 5) {
+            if(sumRed == sumBlue && sumRed == cellAmount/2-1) {
                 int count = 0;
-                while(count < fullColumnIndexes.size()) {
+                while(count < fullRowIndexes.size()) {
                     int totalSame = 0;
                     for(int k = 0; k < cells.length; k++) {
-                        if(cells[fullColumnIndexes.get(count)][k].color.equals(cells[i][k].color)) {
+                        if(cells[fullRowIndexes.get(count)][k].color.equals(cells[i][k].color)) {
                             totalSame++;
                         }
                     }
                     if(totalSame == cellAmount - 2) {
                         for(int k = 0; k < cells.length; k++) {
                             if(cells[i][k].color.equals(Color.WHITE)) {
-                                if(cells[fullColumnIndexes.get(count)][k].color.equals(Color.BLUE)) {
+                                if(cells[fullRowIndexes.get(count)][k].color.equals(Color.BLUE)) {
                                     cells[i][k].color = Color.RED;
                                 }
-                                else {
+                                else if(cells[fullRowIndexes.get(count)][k].color.equals(Color.RED)){
                                     cells[i][k].color = Color.BLUE;
                                 }
                             }
                         }
-                        changes+=2;
                     }
                     count++;
                 }
             }
         }
-        return changes;
     }
 
     public static ArrayList<Integer> getFullRows() {
@@ -202,17 +202,14 @@ class Grid implements Iterable<Cell> {
         return array;
     }
 
-    public static int countHalfCellRowColumn() {
-        int totalCount = 0;
-        totalCount += halfColumn();
-        totalCount += halfRow();
-        return totalCount;
+    public static void countHalfCellRowColumn() {
+        halfColumn();
+        halfRow();
     }
 
-    public static int halfRow() {
+    public static void halfRow() {
         int sumRed;
         int sumBlue;
-        int changes = 0;
         for(int i = 0; i < cells.length; i++) {
             sumRed = 0;
             sumBlue = 0;
@@ -230,7 +227,6 @@ class Grid implements Iterable<Cell> {
                         cells[k][i].color = Color.BLUE;
                     }
                 }
-                changes += cellAmount/2 - sumBlue;
             }
             else if(sumBlue == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
@@ -238,16 +234,13 @@ class Grid implements Iterable<Cell> {
                         cells[k][i].color = Color.RED;
                     }
                 }
-                changes+= cellAmount/2 - sumRed;
             }
         }
-        return changes;
     }
 
-    public static int halfColumn() {
+    public static void halfColumn() {
         int sumRed;
         int sumBlue;
-        int changes = 0;
         for(int i = 0; i < cells.length; i++) {
             sumRed = 0;
             sumBlue = 0;
@@ -265,7 +258,6 @@ class Grid implements Iterable<Cell> {
                         cells[i][k].color = Color.BLUE;
                     }
                 }
-                changes += cellAmount/2 - sumBlue;
             }
             else if(sumBlue == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
@@ -273,14 +265,11 @@ class Grid implements Iterable<Cell> {
                         cells[i][k].color = Color.RED;
                     }
                 }
-                changes+= cellAmount/2 - sumRed;
             }
         }
-        return changes;
     }
 
-    public static int threes() {
-        int changes = 0;
+    public static void threes() {
         ArrayList<Cell> cellAround = new ArrayList<>();
         for(int i = 0; i < cells.length; i++) {
             for(int j = 0; j < cells[i].length; j++) {
@@ -291,13 +280,11 @@ class Grid implements Iterable<Cell> {
                         if(cells[i][j].color.equals(Color.RED)) {
                             if(!(cellInbetween(cells[i][j], cellAround.get(k)).color.equals(Color.BLUE))) {
                                 cellInbetween(cells[i][j], cellAround.get(k)).color = Color.BLUE;
-                                changes++;
                             }
                         }
                         else {
                             if(!(cellInbetween(cells[i][j], cellAround.get(k)).color.equals(Color.RED))) {
                                 cellInbetween(cells[i][j], cellAround.get(k)).color = Color.RED;
-                                changes++;
                             }
                         }
                     }
@@ -317,13 +304,11 @@ class Grid implements Iterable<Cell> {
                                 if(getIJ(smaller)[0]-1 >= 0) {
                                     if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.BLUE))) {
                                         cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.BLUE;
-                                        changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[0]+1 < cellAmount) {
                                     if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.BLUE))) {
                                         cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.BLUE;
-                                        changes++;
                                     }
                                 }
                             }
@@ -335,13 +320,11 @@ class Grid implements Iterable<Cell> {
                                 if(getIJ(smaller)[1]-1 >= 0) {
                                     if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.BLUE))) {
                                         cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.BLUE;
-                                        changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[1]+1 < cellAmount) {
                                     if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.BLUE))) {
                                         cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.BLUE;
-                                        changes++;
                                     }
                                 }
                             }
@@ -356,13 +339,11 @@ class Grid implements Iterable<Cell> {
                                 if(getIJ(smaller)[0]-1 >= 0) {
                                     if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.RED))) {
                                         cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.RED;
-                                        changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[0]+1 < cellAmount) {
                                     if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.RED))) {
                                         cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.RED;
-                                        changes++;
                                     }
                                 }
                             }
@@ -374,13 +355,11 @@ class Grid implements Iterable<Cell> {
                                 if(getIJ(smaller)[1]-1 >= 0) {
                                     if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.RED))) {
                                         cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.RED;
-                                        changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[1]+1 < cellAmount) {
                                     if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.RED))) {
                                         cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.RED;
-                                        changes++;
                                     }
                                 }
                             }
@@ -389,7 +368,6 @@ class Grid implements Iterable<Cell> {
                 }
             }
         }
-        return changes;
     }
 
     public static ArrayList<Cell> cellNAround(Cell c, int n) {

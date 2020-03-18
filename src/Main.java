@@ -44,8 +44,6 @@ class Main extends JFrame {
     }
 
     public static void main(String[] args) throws Exception {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        //ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new java.io.File("data/Cabin-Regular.ttf")));
         Main window = new Main();
         window.run();
     }
