@@ -1,12 +1,9 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
 import java.util.function.Consumer;
 
 class Grid implements Iterable<Cell> {
-    static int cellAmount = 12;
+    static int cellAmount = 6;
     static int cellSize = 45;
     static int gridPadding = 10;
     static Cell[][] cells = new Cell[cellAmount][cellAmount];
@@ -59,29 +56,160 @@ class Grid implements Iterable<Cell> {
     }
 
     public static void solve() {
-        int i = 0;
-        while(i < 3) {
-            countComplete += threes();
-            i++;
+        while(countComplete < cellAmount * cellAmount) {
+            int i = 0;
+            while(i < 3) {
+                countComplete += threes();
+                i++;
+            }
+            while(i < 7) {
+                countComplete += countHalfCellRowColumn();
+                i++;
+            }
+            while(i < 11) {
+                countComplete += compareRowColumn();
+                i++;
+            }
         }
-        while(i < 7) {
-            countComplete += countSixRowColumn();
-            i++;
-        }
-        //while(countComplete != cellAmount * cellAmount) {
-        //    countComplete+=threes();
-        //}
     }
 
-    public static int countSixRowColumn() {
-        //columns
+    public static int compareRowColumn() {
         int totalCount = 0;
-        totalCount += sixColumn();
-        totalCount += sixRow();
+        totalCount += compareRow();
+        totalCount += compareColumn();
         return totalCount;
     }
 
-    public static int sixRow() {
+    public static int compareRow() {
+        int sumRed;
+        int sumBlue;
+        int changes = 0;
+        ArrayList<Integer> fullRowIndexes = getFullRows();
+        for(int i = 0; i < cells.length; i++) {
+            sumRed = 0;
+            sumBlue = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(cells[j][i].color.equals(Color.RED)) {
+                    sumRed++;
+                }
+                if(cells[j][i].color.equals(Color.BLUE)) {
+                    sumBlue++;
+                }
+            }
+            if(sumRed == sumBlue && sumRed == cellAmount/2-1) {
+                int count = 0;
+                while(count < fullRowIndexes.size()) {
+                    int totalSame = 0;
+                    for(int k = 0; k < cells.length; k++) {
+                        if(cells[k][fullRowIndexes.get(count)].color.equals(cells[k][i].color)) {
+                            totalSame++;
+                        }
+                    }
+                    if(totalSame == cellAmount - 2) {
+                        for(int k = 0; k < cells.length; k++) {
+                            if(cells[k][i].color.equals(Color.WHITE)) {
+                                if(cells[k][fullRowIndexes.get(count)].color.equals(Color.BLUE)) {
+                                    cells[k][i].color = Color.RED;
+                                }
+                                else if(cells[k][fullRowIndexes.get(count)].color.equals(Color.RED)){
+                                    cells[k][i].color = Color.BLUE;
+                                }
+                            }
+                        }
+                        changes+=2;
+                    }
+                    count++;
+                }
+            }
+        }
+        return changes;
+    }
+
+    public static int compareColumn() {
+        int sumRed;
+        int sumBlue;
+        int changes = 0;
+        ArrayList<Integer> fullColumnIndexes = getFullColumns();
+        for(int i = 0; i < cells.length; i++) {
+            sumRed = 0;
+            sumBlue = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(cells[i][j].color.equals(Color.RED)) {
+                    sumRed++;
+                }
+                if(cells[i][j].color.equals(Color.BLUE)) {
+                    sumBlue++;
+                }
+            }
+            if(sumRed == sumBlue && sumRed == 5) {
+                int count = 0;
+                while(count < fullColumnIndexes.size()) {
+                    int totalSame = 0;
+                    for(int k = 0; k < cells.length; k++) {
+                        if(cells[fullColumnIndexes.get(count)][k].color.equals(cells[i][k].color)) {
+                            totalSame++;
+                        }
+                    }
+                    if(totalSame == cellAmount - 2) {
+                        for(int k = 0; k < cells.length; k++) {
+                            if(cells[i][k].color.equals(Color.WHITE)) {
+                                if(cells[fullColumnIndexes.get(count)][k].color.equals(Color.BLUE)) {
+                                    cells[i][k].color = Color.RED;
+                                }
+                                else {
+                                    cells[i][k].color = Color.BLUE;
+                                }
+                            }
+                        }
+                        changes+=2;
+                    }
+                    count++;
+                }
+            }
+        }
+        return changes;
+    }
+
+    public static ArrayList<Integer> getFullRows() {
+        ArrayList<Integer> array = new ArrayList<Integer>();
+        for(int i = 0; i < cells.length; i++) {
+            int nonWhite = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(!(cells[j][i].color.equals(Color.WHITE))) {
+                    nonWhite++;
+                }
+            }
+            if(nonWhite == cellAmount) {
+                array.add(i);
+            }
+        }
+        return array;
+    }
+
+    public static ArrayList<Integer> getFullColumns() {
+        ArrayList<Integer> array = new ArrayList<Integer>();
+        for(int i = 0; i < cells.length; i++) {
+            int nonWhite = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(!(cells[i][j].color.equals(Color.WHITE))) {
+                    nonWhite++;
+                }
+            }
+            if(nonWhite == cellAmount) {
+                array.add(i);
+            }
+        }
+        return array;
+    }
+
+    public static int countHalfCellRowColumn() {
+        int totalCount = 0;
+        totalCount += halfColumn();
+        totalCount += halfRow();
+        return totalCount;
+    }
+
+    public static int halfRow() {
         int sumRed;
         int sumBlue;
         int changes = 0;
@@ -96,27 +224,27 @@ class Grid implements Iterable<Cell> {
                     sumBlue++;
                 }
             }
-            if(sumRed == 6) {
+            if(sumRed == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
                     if(cells[k][i].color.equals(Color.WHITE)) {
                         cells[k][i].color = Color.BLUE;
                     }
                 }
-                changes += 6 - sumBlue;
+                changes += cellAmount/2 - sumBlue;
             }
-            else if(sumBlue == 6) {
+            else if(sumBlue == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
                     if(cells[k][i].color.equals(Color.WHITE)) {
                         cells[k][i].color = Color.RED;
                     }
                 }
-                changes+= 6 - sumRed;
+                changes+= cellAmount/2 - sumRed;
             }
         }
         return changes;
     }
 
-    public static int sixColumn() {
+    public static int halfColumn() {
         int sumRed;
         int sumBlue;
         int changes = 0;
@@ -131,21 +259,21 @@ class Grid implements Iterable<Cell> {
                     sumBlue++;
                 }
             }
-            if(sumRed == 6) {
+            if(sumRed == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
                     if(cells[i][k].color.equals(Color.WHITE)) {
                         cells[i][k].color = Color.BLUE;
                     }
                 }
-                changes += 6 - sumBlue;
+                changes += cellAmount/2 - sumBlue;
             }
-            else if(sumBlue == 6) {
+            else if(sumBlue == cellAmount/2) {
                 for(int k = 0; k < cells[i].length; k++) {
                     if(cells[i][k].color.equals(Color.WHITE)) {
                         cells[i][k].color = Color.RED;
                     }
                 }
-                changes+= 6 - sumRed;
+                changes+= cellAmount/2 - sumRed;
             }
         }
         return changes;
