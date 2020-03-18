@@ -60,7 +60,11 @@ class Grid implements Iterable<Cell> {
     }
 
     public static void solve() {
-        countComplete += threes();
+        int n = 2;
+        while(n >= 0) {
+            countComplete += threes();
+            n--;
+        }
         //while(countComplete != cellAmount * cellAmount) {
         //    countComplete+=threes();
         //}
@@ -72,7 +76,7 @@ class Grid implements Iterable<Cell> {
         for(int i = 0; i < cells.length; i++) {
             for(int j = 0; j < cells[i].length; j++) {
                 cellAround.clear();
-                cellAround = cellTwoAround(cells[i][j]);
+                cellAround = cellNAround(cells[i][j], 2);
                 for(int k = 0; k < cellAround.size(); k++) {
                     if(cellAround.get(k).color.equals(cells[i][j].color) && !(cells[i][j].color.equals(Color.WHITE))) {
                         if(cells[i][j].color.equals(Color.RED)) {
@@ -84,26 +88,111 @@ class Grid implements Iterable<Cell> {
                         changes++;
                     }
                 }
+                cellAround.clear();
+                cellAround = cellNAround(cells[i][j], 1);
+                for(int k = 0; k < cellAround.size(); k++) {
+                    if(cellAround.get(k).color.equals(cells[i][j].color) && !(cells[i][j].color.equals(Color.WHITE))) {
+                        Cell smaller = cells[i][j];
+                        Cell bigger = cellAround.get(k);
+                        if(cells[i][j].color.equals(Color.RED)) {
+                            if(i != getIJ(cellAround.get(k))[0]) {
+                                if(getIJ(bigger)[0] < getIJ(smaller)[0]) {
+                                    smaller = cellAround.get(k);
+                                    bigger = cells[i][j];
+                                }
+                                if(getIJ(smaller)[0]-1 >= 0) {
+                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.RED))) {
+                                        cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.BLUE;
+                                        changes++;
+                                    }
+                                }
+                                if(getIJ(bigger)[0]+1 < cellAmount) {
+                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.RED))) {
+                                        cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.BLUE;
+                                        changes++;
+                                    }
+                                }
+                            }
+                            if(j != getIJ(cellAround.get(k))[1]) {
+                                if(getIJ(bigger)[1] < getIJ(smaller)[1]) {
+                                    smaller = cellAround.get(k);
+                                    bigger = cells[i][j];
+                                }
+                                if(getIJ(smaller)[1]-1 >= 0) {
+                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.RED))) {
+                                        cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.BLUE;
+                                        changes++;
+                                    }
+                                }
+                                if(getIJ(bigger)[1]+1 < cellAmount) {
+                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.RED))) {
+                                        cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.BLUE;
+                                        changes++;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(cells[i][j].color.equals(Color.BLUE)) {
+                            if(i != getIJ(cellAround.get(k))[0]) {
+                                if(getIJ(bigger)[0] < getIJ(smaller)[0]) {
+                                    smaller = cellAround.get(k);
+                                    bigger = cells[i][j];
+                                }
+                                if(getIJ(smaller)[0]-1 >= 0) {
+                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.BLUE))) {
+                                        cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.RED;
+                                        changes++;
+                                    }
+                                }
+                                if(getIJ(bigger)[0]+1 < cellAmount) {
+                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.BLUE))) {
+                                        cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.RED;
+                                        changes++;
+                                    }
+                                }
+                            }
+                            if(j != getIJ(cellAround.get(k))[1]) {
+                                if(getIJ(bigger)[1] < getIJ(smaller)[1]) {
+                                    smaller = cellAround.get(k);
+                                    bigger = cells[i][j];
+                                }
+                                if(getIJ(smaller)[1]-1 >= 0) {
+                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.BLUE))) {
+                                        cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.RED;
+                                        changes++;
+                                    }
+                                }
+                                if(getIJ(bigger)[1]+1 < cellAmount) {
+                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.BLUE))) {
+                                        cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.RED;
+                                        changes++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         return changes;
     }
 
-    public static ArrayList<Cell> cellTwoAround(Cell c) {
+    public static ArrayList<Cell> cellNAround(Cell c, int n) {
         int i = getIJ(c)[0];
         int j = getIJ(c)[1];
         ArrayList<Cell> cellsAround = new ArrayList<>();
-        if(i - 2 >= 0) {
-            cellsAround.add(cells[i-2][j]);
+        if(i - n >= 0) {
+            cellsAround.add(cells[i-n][j]);
         }
-        if(i + 2 <= cellAmount - 1) {
-            cellsAround.add(cells[i+2][j]);
+        if(i + n <= cellAmount - 1) {
+            cellsAround.add(cells[i+n][j]);
         }
-        if(j - 2 >= 0) {
-            cellsAround.add(cells[i][j-2]);
+        if(j - n >= 0) {
+            cellsAround.add(cells[i][j-n]);
         }
-        if(j + 2 <= cellAmount-1) {
-            cellsAround.add(cells[i][j+2]);
+        if(j + n <= cellAmount-1) {
+            cellsAround.add(cells[i][j+n]);
         }
         return cellsAround;
     }
