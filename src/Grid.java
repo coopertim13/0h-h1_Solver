@@ -45,7 +45,6 @@ class Grid implements Iterable<Cell> {
                     }
                     else if(cells[i][j].color == Color.RED) {
                         cells[i][j].color = Color.BLUE;
-                        countComplete++;
                     }
                     else {
                         cells[i][j].color = Color.WHITE;
@@ -60,14 +59,18 @@ class Grid implements Iterable<Cell> {
     }
 
     public static void solve() {
-        int n = 2;
-        while(n >= 0) {
+        int i = 0;
+        while(i < 3) {
             countComplete += threes();
-            n--;
         }
+        countComplete += countSixRowColumn();
         //while(countComplete != cellAmount * cellAmount) {
         //    countComplete+=threes();
         //}
+    }
+
+    public static int countSixRowColumn() {
+        return 0;
     }
 
     public static int threes() {
@@ -80,12 +83,17 @@ class Grid implements Iterable<Cell> {
                 for(int k = 0; k < cellAround.size(); k++) {
                     if(cellAround.get(k).color.equals(cells[i][j].color) && !(cells[i][j].color.equals(Color.WHITE))) {
                         if(cells[i][j].color.equals(Color.RED)) {
-                            cellInbetween(cells[i][j], cellAround.get(k)).color = Color.BLUE;
+                            if(!(cellInbetween(cells[i][j], cellAround.get(k)).color.equals(Color.BLUE))) {
+                                cellInbetween(cells[i][j], cellAround.get(k)).color = Color.BLUE;
+                                changes++;
+                            }
                         }
                         else {
-                            cellInbetween(cells[i][j], cellAround.get(k)).color = Color.RED;
+                            if(!(cellInbetween(cells[i][j], cellAround.get(k)).color.equals(Color.RED))) {
+                                cellInbetween(cells[i][j], cellAround.get(k)).color = Color.RED;
+                                changes++;
+                            }
                         }
-                        changes++;
                     }
                 }
                 cellAround.clear();
@@ -101,13 +109,13 @@ class Grid implements Iterable<Cell> {
                                     bigger = cells[i][j];
                                 }
                                 if(getIJ(smaller)[0]-1 >= 0) {
-                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.RED))) {
+                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.BLUE))) {
                                         cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.BLUE;
                                         changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[0]+1 < cellAmount) {
-                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.RED))) {
+                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.BLUE))) {
                                         cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.BLUE;
                                         changes++;
                                     }
@@ -119,13 +127,13 @@ class Grid implements Iterable<Cell> {
                                     bigger = cells[i][j];
                                 }
                                 if(getIJ(smaller)[1]-1 >= 0) {
-                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.RED))) {
+                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.BLUE))) {
                                         cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.BLUE;
                                         changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[1]+1 < cellAmount) {
-                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.RED))) {
+                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.BLUE))) {
                                         cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.BLUE;
                                         changes++;
                                     }
@@ -140,13 +148,13 @@ class Grid implements Iterable<Cell> {
                                     bigger = cells[i][j];
                                 }
                                 if(getIJ(smaller)[0]-1 >= 0) {
-                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.BLUE))) {
+                                    if(!(cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color.equals(Color.RED))) {
                                         cells[getIJ(smaller)[0]-1][getIJ(smaller)[1]].color = Color.RED;
                                         changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[0]+1 < cellAmount) {
-                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.BLUE))) {
+                                    if(!(cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color.equals(Color.RED))) {
                                         cells[getIJ(bigger)[0]+1][getIJ(bigger)[1]].color = Color.RED;
                                         changes++;
                                     }
@@ -158,13 +166,13 @@ class Grid implements Iterable<Cell> {
                                     bigger = cells[i][j];
                                 }
                                 if(getIJ(smaller)[1]-1 >= 0) {
-                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.BLUE))) {
+                                    if(!(cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color.equals(Color.RED))) {
                                         cells[getIJ(smaller)[0]][getIJ(smaller)[1]-1].color = Color.RED;
                                         changes++;
                                     }
                                 }
                                 if(getIJ(bigger)[1]+1 < cellAmount) {
-                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.BLUE))) {
+                                    if(!(cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color.equals(Color.RED))) {
                                         cells[getIJ(bigger)[0]][getIJ(bigger)[1]+1].color = Color.RED;
                                         changes++;
                                     }
