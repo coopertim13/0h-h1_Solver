@@ -62,15 +62,93 @@ class Grid implements Iterable<Cell> {
         int i = 0;
         while(i < 3) {
             countComplete += threes();
+            i++;
         }
-        countComplete += countSixRowColumn();
+        while(i < 7) {
+            countComplete += countSixRowColumn();
+            i++;
+        }
         //while(countComplete != cellAmount * cellAmount) {
         //    countComplete+=threes();
         //}
     }
 
     public static int countSixRowColumn() {
-        return 0;
+        //columns
+        int totalCount = 0;
+        totalCount += sixColumn();
+        totalCount += sixRow();
+        return totalCount;
+    }
+
+    public static int sixRow() {
+        int sumRed;
+        int sumBlue;
+        int changes = 0;
+        for(int i = 0; i < cells.length; i++) {
+            sumRed = 0;
+            sumBlue = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(cells[j][i].color.equals(Color.RED)) {
+                    sumRed++;
+                }
+                if(cells[j][i].color.equals(Color.BLUE)) {
+                    sumBlue++;
+                }
+            }
+            if(sumRed == 6) {
+                for(int k = 0; k < cells[i].length; k++) {
+                    if(cells[k][i].color.equals(Color.WHITE)) {
+                        cells[k][i].color = Color.BLUE;
+                    }
+                }
+                changes += 6 - sumBlue;
+            }
+            else if(sumBlue == 6) {
+                for(int k = 0; k < cells[i].length; k++) {
+                    if(cells[k][i].color.equals(Color.WHITE)) {
+                        cells[k][i].color = Color.RED;
+                    }
+                }
+                changes+= 6 - sumRed;
+            }
+        }
+        return changes;
+    }
+
+    public static int sixColumn() {
+        int sumRed;
+        int sumBlue;
+        int changes = 0;
+        for(int i = 0; i < cells.length; i++) {
+            sumRed = 0;
+            sumBlue = 0;
+            for(int j = 0; j < cells[i].length; j++) {
+                if(cells[i][j].color.equals(Color.RED)) {
+                    sumRed++;
+                }
+                if(cells[i][j].color.equals(Color.BLUE)) {
+                    sumBlue++;
+                }
+            }
+            if(sumRed == 6) {
+                for(int k = 0; k < cells[i].length; k++) {
+                    if(cells[i][k].color.equals(Color.WHITE)) {
+                        cells[i][k].color = Color.BLUE;
+                    }
+                }
+                changes += 6 - sumBlue;
+            }
+            else if(sumBlue == 6) {
+                for(int k = 0; k < cells[i].length; k++) {
+                    if(cells[i][k].color.equals(Color.WHITE)) {
+                        cells[i][k].color = Color.RED;
+                    }
+                }
+                changes+= 6 - sumRed;
+            }
+        }
+        return changes;
     }
 
     public static int threes() {
