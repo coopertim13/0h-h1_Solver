@@ -29,6 +29,18 @@ class Grid implements Iterable<Cell> {
         g.fillRect(0,(gridPadding+(cellSize*cellAmount)+2),560,100);
         g.setColor(Color.BLACK);
         g.drawString("Solve", 270, (gridPadding+(cellSize*cellAmount)+55));
+        g.setColor(Color.YELLOW);
+        g.fillRect(0,(gridPadding+(cellSize*cellAmount)+102),112,100);
+        g.fillRect(113,(gridPadding+(cellSize*cellAmount)+102),112,100);
+        g.fillRect(226,(gridPadding+(cellSize*cellAmount)+102),112,100);
+        g.fillRect(339,(gridPadding+(cellSize*cellAmount)+102),112,100);
+        g.fillRect(452,(gridPadding+(cellSize*cellAmount)+102),112,100);
+        g.setColor(Color.BLACK);
+        g.drawString("4", 50, (gridPadding+(cellSize*cellAmount)+152));
+        g.drawString("6", 161, (gridPadding+(cellSize*cellAmount)+152));
+        g.drawString("8", 272, (gridPadding+(cellSize*cellAmount)+152));
+        g.drawString("10", 383, (gridPadding+(cellSize*cellAmount)+152));
+        g.drawString("12", 494, (gridPadding+(cellSize*cellAmount)+152));
     }
 
     public void mouseClicked(int x, int y) {
@@ -48,7 +60,33 @@ class Grid implements Iterable<Cell> {
             }
         }
         if(y>=(gridPadding+(cellSize*cellAmount))) {
-            solve();
+            if(y < (gridPadding+(cellSize*cellAmount))+102) {
+                solve();
+            }
+            else {
+                doToEachCell((Cell c) -> c.color = Color.WHITE);
+                if(x <= 113) {
+                    cellAmount = 4;
+                }
+                else if(x <= 226) {
+                    cellAmount = 6;
+                }
+                else if(x <= 339) {
+                    cellAmount = 8;
+                }
+                else if(x <= 452) {
+                    cellAmount = 10;
+                }
+                else {
+                    cellAmount = 12;
+                }
+                cells = new Cell[cellAmount][cellAmount];
+                for(int a = 0; a < cells.length; a++){
+                    for(int b = 0; b < cells[a].length; b++){
+                            cells[a][b] = new Cell(position(a), position(b));
+                    }
+                }
+            }
         }
     }
 

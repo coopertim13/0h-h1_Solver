@@ -13,7 +13,7 @@ class Main extends JFrame {
 
         public App() {
             int width = 560;
-            int height = 650;
+            int height = 750;
             setPreferredSize(new Dimension(width, height));
             this.addMouseListener(this);
             grid = new Grid();
